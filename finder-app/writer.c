@@ -5,9 +5,13 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <syslog.h>
 
 int main(int argc, char *argv[])
 {
+ // Open syslog
+  openlog(NULL, 0, LOG_USER);
+
  // Check argument count is 2 
   if (argc != 3)
   {	
@@ -25,6 +29,7 @@ int main(int argc, char *argv[])
   if (fd == -1)
     {
       printf("Error creating file: %s\n", strerror(err));
+      syslog(LOG_ERR, "Error creating file: %s\n", strerror(err));
       return 1;
     }
 
@@ -36,7 +41,13 @@ int main(int argc, char *argv[])
     {
       printf("Error writing %s to %s, error is %s\n", my_writestr, my_writefile, strerror(err));
       perror("write");
+      syslog(LOG_ERR,"Error writing %s to %s, error is %s\n", my_writestr, my_writefile, strerror(err));
       return 1;
     } 
+  else
+    {
+      syslog(LOG_DEBUG,"Writing %s to %s", my_writestr, my_writefile);
+      printf("Writing %s to %s\n", my_writestr, my_writefile);
+    }
 }
 
